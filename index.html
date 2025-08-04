@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:if="${page}=='index'">User Form</title>
+    <title th:if="${page}=='login'">Login</title>
+    <title th:if="${page}=='register'">Register</title>
+    <title th:if="${page}=='result'">Result</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container, form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+        }
+
+        .green { background-color: #28a745; color: white; }
+        .blue { background-color: #007BFF; color: white; }
+        .darkgreen { background-color: #4CAF50; color: white; }
+
+        button:hover { filter: brightness(90%); }
+
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== Home Page ========== -->
+<div th:if="${page} == 'index'" class="container">
+    <h2>Enter Your Name:</h2>
+    <form th:action="@{/submit}" method="post">
+        <input type="text" name="username" placeholder="Enter your name" required />
+        <button class="green" type="submit">Submit</button>
+    </form>
+    <a href="/register">Go to Register</a>
+    <a href="/login">Go to Login</a>
+</div>
+
+<!-- ========== Login Page ========== -->
+<form th:if="${page} == 'login'" th:action="@{/login}" method="post">
+    <h2>User Login</h2>
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <button class="blue" type="submit">Login</button>
+</form>
+
+<!-- ========== Register Page ========== -->
+<form th:if="${page} == 'register'" th:action="@{/register}" method="post">
+    <h2>User Registration</h2>
+    <input type="text" name="username" placeholder="Username" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <button class="darkgreen" type="submit">Register</button>
+</form>
+
+<!-- ========== Result Page ========== -->
+<div th:if="${page} == 'result'" class="container">
+    <h2 th:text="'Hello, ' + ${name}"></h2>
+    <a href="/">Go back</a>
+</div>
+
+</body>
+</html>
