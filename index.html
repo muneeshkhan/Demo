@@ -1,93 +1,121 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title th:if="${page}=='index'">User Form</title>
-    <title th:if="${page}=='login'">Login</title>
-    <title th:if="${page}=='register'">Register</title>
-    <title th:if="${page}=='result'">Result</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Form - Working Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    .container {
+      width: 90%;
+      max-width: 450px;
+      background: #fff;
+      padding: 25px;
+      margin: 60px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
 
-        .container, form {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
-        }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
 
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
 
-        button {
-            border: none;
-            cursor: pointer;
-        }
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
 
-        .green { background-color: #28a745; color: white; }
-        .blue { background-color: #007BFF; color: white; }
-        .darkgreen { background-color: #4CAF50; color: white; }
+    button:hover {
+      background: #0056b3;
+    }
 
-        button:hover { filter: brightness(90%); }
-
-        a {
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #007BFF;
-        }
-    </style>
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-
-<!-- ========== Home Page ========== -->
-<div th:if="${page} == 'index'" class="container">
-    <h2>Enter Your Name:</h2>
-    <form th:action="@{/submit}" method="post">
-        <input type="text" name="username" placeholder="Enter your name" required />
-        <button class="green" type="submit">Submit</button>
+  <div class="container">
+    <h2>Contact Us</h2>
+    <form id="contactForm">
+      <input type="text" id="from_name" name="from_name" placeholder="Your Name" required />
+      <input type="email" id="from_email" name="from_email" placeholder="Your Email" required />
+      <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+      <button type="submit">Send Message</button>
     </form>
-    <a href="/register">Go to Register</a>
-    <a href="/login">Go to Login</a>
-</div>
+    <div id="status"></div>
+  </div>
 
-<!-- ========== Login Page ========== -->
-<form th:if="${page} == 'login'" th:action="@{/login}" method="post">
-    <h2>User Login</h2>
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button class="blue" type="submit">Login</button>
-</form>
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init("NGtHSpNXkIBeK_Q84"); // 🔑 Replace with your Public Key
+    })();
 
-<!-- ========== Register Page ========== -->
-<form th:if="${page} == 'register'" th:action="@{/register}" method="post">
-    <h2>User Registration</h2>
-    <input type="text" name="username" placeholder="Username" required />
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button class="darkgreen" type="submit">Register</button>
-</form>
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-<!-- ========== Result Page ========== -->
-<div th:if="${page} == 'result'" class="container">
-    <h2 th:text="'Hello, ' + ${name}"></h2>
-    <a href="/">Go back</a>
-</div>
+      const from_name = document.getElementById("from_name").value.trim();
+      const from_email = document.getElementById("from_email").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const status = document.getElementById("status");
 
+      if (!from_name || !from_email || !message) {
+        status.style.color = "red";
+        status.textContent = "Please fill out all fields!";
+        return;
+      }
+
+      // Show loading message
+      status.style.color = "blue";
+      status.textContent = "Sending message...";
+
+      const serviceID = "service_vxgzd5h";   // 🟢 Replace with your Service ID
+      const templateID = "template_7ow2lta"; // 🟢 Replace with your Template ID
+
+      const templateParams = {
+        from_name: from_name,
+        from_email: from_email,
+        message: message,
+      };
+
+      emailjs.send(serviceID, templateID, templateParams)
+        .then(() => {
+          status.style.color = "green";
+          status.textContent = "Message sent successfully!";
+          document.getElementById("contactForm").reset();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          status.style.color = "red";
+          status.textContent = "Failed to send message. Please try again.";
+        });
+    });
+  </script>
 </body>
 </html>
